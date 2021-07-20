@@ -1,18 +1,25 @@
 import {
+  DashboardOutlined,
+  LaptopOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UploadOutlined,
   UserOutlined,
-  VideoCameraOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu } from "antd";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { ReactNode, useState } from "react";
 import styles from "./adminLayout.module.css";
 
 const { Header, Sider, Content } = Layout;
 
-function AdminLayout({ children }: { readonly children: ReactNode }) {
+export default function AdminLayout({
+  children,
+}: {
+  readonly children: ReactNode;
+}) {
   const [collapsed, setCollapsed] = useState<boolean>(false);
+  const router = useRouter();
 
   function toggle() {
     setCollapsed(!collapsed);
@@ -22,15 +29,15 @@ function AdminLayout({ children }: { readonly children: ReactNode }) {
     <Layout>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className={styles.logo} />
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={["1"]}>
-          <Menu.Item key="1" icon={<UserOutlined />}>
-            nav 1
+        <Menu theme="dark" mode="inline" selectedKeys={[router.pathname]}>
+          <Menu.Item key="/" icon={<DashboardOutlined />}>
+            <Link href="/">ダッシュボード</Link>
           </Menu.Item>
-          <Menu.Item key="2" icon={<VideoCameraOutlined />}>
-            nav 2
+          <Menu.Item key="/users" icon={<UserOutlined />}>
+            <Link href="/users">利用者</Link>
           </Menu.Item>
-          <Menu.Item key="3" icon={<UploadOutlined />}>
-            nav 3
+          <Menu.Item key="/equipments" icon={<LaptopOutlined />}>
+            <Link href="/equipments">備品</Link>
           </Menu.Item>
         </Menu>
       </Sider>
@@ -56,5 +63,3 @@ function AdminLayout({ children }: { readonly children: ReactNode }) {
     </Layout>
   );
 }
-
-export default AdminLayout;
