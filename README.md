@@ -1,5 +1,6 @@
 # Next.js + Ant Design + TypeScriptのデモ
 
+Next.jsでAnt Designを使うデモです。
 
 ## Next.jsプロジェクトを生成する
 
@@ -140,12 +141,20 @@ import 'antd/dist/antd.css';
 [pages/index.tsx](./pages/index.tsx)のコードをまるっと次のコードに置き換える:
 
 ```tsx
-import AdminLayout from "../layouts/adminLayout";
+import dynamic from "next/dynamic";
+
+const AdminLayout = dynamic(() => import("../layouts/adminLayout"), {
+  ssr: false,
+});
 
 export default function Home() {
   return <AdminLayout>コンテンツ</AdminLayout>;
 }
 ```
+
+`dynamic`で`import`しているのは、Ant Designの`Layout`コンポーネントが依存するコンポーネントで`useLayoutEffect`が使われているため。SSRを無効にする必要がある。次のissueが直るまでの対処法。
+
+- [Select mode="multiple" throws useLayoutEffect warning in Next.js · Issue #30396 · ant-design/ant-design](https://github.com/ant-design/ant-design/issues/30396)
 
 次のような見た目になればOK:
 
