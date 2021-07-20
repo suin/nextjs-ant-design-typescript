@@ -291,3 +291,80 @@ export default function Equipments() {
 https://user-images.githubusercontent.com/855338/126248344-fc6cd155-95f0-4a63-b12c-ee7deb205c39.mp4
 
 
+## 利用者画面に一覧テーブルを表示する
+
+ここでは、`/users`にて利用者一覧をテーブル表示するのをやっていきます。
+
+Ant Designの`<Table>`コンポーネントを用います。
+
+いきなり完成形ですが、pages/users.tsxの中身は次のようにします。
+
+```tsx
+// pages/users.tsx
+import { Avatar, PaginationProps, Table } from "antd";
+import { TablePaginationConfig } from "antd/es/table/interface";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+
+const { Column } = Table;
+
+export default function Users() {
+  const router = useRouter();
+  const [data, setData] = useState<ReadonlyArray<any>>([]);
+  const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState<PaginationProps>();
+
+  // URLのpageクエリーパラメータをもとに、APIから所定のページを取ってくるようにします。
+  // pageパラメータが変化するごとに発動します。
+  useEffect(
+    () => fetchUsers((router.query.page as any) ?? 0),
+    [router.query.page]
+  );
+
+  // これは、ページネーションのUIをクリックしたときに発動します。
+  function handleChange({ current = 0 }: TablePaginationConfig) {
+    router.push({ pathname: router.pathname, query: { page: current } });
+  }
+
+  // ユーザーのダミーデータを提供してくれるAPI、ReqResからデータをお借りします。
+  function fetchUsers(page: number = 1) {
+    setLoading(true);
+    fetch(`https://reqres.in/api/users?page=${page}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data.data);
+        setPagination({
+          total: data.total,
+          pageSize: data.per_page,
+          current: data.page,
+        });
+        setLoading(false);
+      });
+  }
+
+  return (
+    <Table
+      rowKey="id"
+      dataSource={data}
+      loading={loading}
+      pagination={pagination}
+      onChange={handleChange}
+    >
+      <Column title="ID" dataIndex="id" />
+      <Column
+        title="Photo"
+        dataIndex="avatar"
+        render={(x) => <Avatar src={x} />}
+      />
+      <Column title="First Name" dataIndex="first_name" />
+      <Column title="Last Name" dataIndex="last_name" />
+      <Column title="Email" dataIndex="email" />
+    </Table>
+  );
+}
+```
+
+これを実装すると次の動画のように、ページネーションのUIを操作したときにデータがロードされたり、URLに`page`パラメータを指定して直接アクセスしたときに該当のページが表示されるようになります。
+
+https://user-images.githubusercontent.com/855338/126255802-58b6fa8f-f04e-447e-8aee-98a6c3770978.mp4
+
