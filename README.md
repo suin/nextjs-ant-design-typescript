@@ -28,7 +28,6 @@ git commit --allow-empty --message="chore: 🤖 add generated Next.js code"
 yarn dev
 ```
 
-
 ## Ant Designパッケージをインストールする
 
 ```bash
@@ -63,15 +62,15 @@ function AdminLayout({ children }: { readonly children: ReactNode }) {
   return (
     <Layout>
       <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className={styles.logo} />
+        <div className={styles.logo}/>
         <Menu theme="dark" mode="inline" defaultSelectedKeys={["1"]}>
-          <Menu.Item key="1" icon={<UserOutlined />}>
+          <Menu.Item key="1" icon={<UserOutlined/>}>
             nav 1
           </Menu.Item>
-          <Menu.Item key="2" icon={<VideoCameraOutlined />}>
+          <Menu.Item key="2" icon={<VideoCameraOutlined/>}>
             nav 2
           </Menu.Item>
-          <Menu.Item key="3" icon={<UploadOutlined />}>
+          <Menu.Item key="3" icon={<UploadOutlined/>}>
             nav 3
           </Menu.Item>
         </Menu>
@@ -79,9 +78,9 @@ function AdminLayout({ children }: { readonly children: ReactNode }) {
       <Layout className="site-layout">
         <Header className={styles.siteLayoutBackground} style={{ padding: 0 }}>
           {collapsed ? (
-            <MenuUnfoldOutlined className={styles.trigger} onClick={toggle} />
+            <MenuUnfoldOutlined className={styles.trigger} onClick={toggle}/>
           ) : (
-            <MenuFoldOutlined className={styles.trigger} onClick={toggle} />
+            <MenuFoldOutlined className={styles.trigger} onClick={toggle}/>
           )}
         </Header>
         <Content
@@ -152,14 +151,14 @@ export default function Home() {
 }
 ```
 
-`dynamic`で`import`しているのは、Ant Designの`Layout`コンポーネントが依存するコンポーネントで`useLayoutEffect`が使われているため。SSRを無効にする必要がある。次のissueが直るまでの対処法。
+`dynamic`で`import`しているのは、Ant Designの`Layout`コンポーネントが依存するコンポーネントで`useLayoutEffect`
+が使われているため。SSRを無効にする必要がある。次のissueが直るまでの対処法。
 
 - [Select mode="multiple" throws useLayoutEffect warning in Next.js · Issue #30396 · ant-design/ant-design](https://github.com/ant-design/ant-design/issues/30396)
 
 次のような見た目になればOK:
 
 ![](./docs/1.png)
-
 
 ## サイドバーのメニューをNext.jsのルーターとインテグする
 
@@ -207,8 +206,8 @@ import styles from "./adminLayout.module.css";
 const { Header, Sider, Content } = Layout;
 
 export default function AdminLayout({
-  children,
-}: {
+                                      children,
+                                    }: {
   readonly children: ReactNode;
 }) {
   const [collapsed, setCollapsed] = useState<boolean>(false);
@@ -221,15 +220,15 @@ export default function AdminLayout({
   return (
     <Layout>
       <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className={styles.logo} />
+        <div className={styles.logo}/>
         <Menu theme="dark" mode="inline" selectedKeys={[router.pathname]}>
-          <Menu.Item key="/" icon={<DashboardOutlined />}>
+          <Menu.Item key="/" icon={<DashboardOutlined/>}>
             <Link href="/">ダッシュボード</Link>
           </Menu.Item>
-          <Menu.Item key="/users" icon={<UserOutlined />}>
+          <Menu.Item key="/users" icon={<UserOutlined/>}>
             <Link href="/users">利用者</Link>
           </Menu.Item>
-          <Menu.Item key="/equipments" icon={<LaptopOutlined />}>
+          <Menu.Item key="/equipments" icon={<LaptopOutlined/>}>
             <Link href="/equipments">備品</Link>
           </Menu.Item>
         </Menu>
@@ -237,9 +236,9 @@ export default function AdminLayout({
       <Layout className="site-layout">
         <Header className={styles.siteLayoutBackground} style={{ padding: 0 }}>
           {collapsed ? (
-            <MenuUnfoldOutlined className={styles.trigger} onClick={toggle} />
+            <MenuUnfoldOutlined className={styles.trigger} onClick={toggle}/>
           ) : (
-            <MenuFoldOutlined className={styles.trigger} onClick={toggle} />
+            <MenuFoldOutlined className={styles.trigger} onClick={toggle}/>
           )}
         </Header>
         <Content
@@ -289,7 +288,6 @@ export default function Equipments() {
 次の動画ように、URLとメニューが連動するような動作になっているはずです:
 
 https://user-images.githubusercontent.com/855338/126248344-fc6cd155-95f0-4a63-b12c-ee7deb205c39.mp4
-
 
 ## 利用者画面に一覧テーブルを表示する
 
@@ -350,15 +348,15 @@ export default function Users() {
       pagination={pagination}
       onChange={handleChange}
     >
-      <Column title="ID" dataIndex="id" />
+      <Column title="ID" dataIndex="id"/>
       <Column
         title="Photo"
         dataIndex="avatar"
-        render={(x) => <Avatar src={x} />}
+        render={(x) => <Avatar src={x}/>}
       />
-      <Column title="First Name" dataIndex="first_name" />
-      <Column title="Last Name" dataIndex="last_name" />
-      <Column title="Email" dataIndex="email" />
+      <Column title="First Name" dataIndex="first_name"/>
+      <Column title="Last Name" dataIndex="last_name"/>
+      <Column title="Email" dataIndex="email"/>
     </Table>
   );
 }
@@ -368,3 +366,54 @@ export default function Users() {
 
 https://user-images.githubusercontent.com/855338/126255802-58b6fa8f-f04e-447e-8aee-98a6c3770978.mp4
 
+## UIを日本語化する
+
+ここでは、UIを日本語化していきます。
+
+日本語化するには、`ConfigProvider`に日本語翻訳データ`"antd/lib/locale/ja_JP"`を渡すだけです:
+
+```tsx
+// pages/_app.tsx
+import { ConfigProvider } from "antd";
+import jaJP from "antd/lib/locale/ja_JP";
+
+// ...
+
+export default function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <ConfigProvider locale={jaJP}>
+      <Component {...pageProps} />
+    </ConfigProvider>
+  );
+}
+```
+
+ためしにフォームを作って確認します:
+
+```tsx
+// pages/equipments/new.tsx
+import { Button, Form, Input } from "antd";
+
+const { Item } = Form;
+
+export default function New() {
+  return (
+    <Form>
+      <Item name="name" label="名前" rules={[{ required: true }]}>
+        <Input />
+      </Item>
+      <Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Button type="primary" htmlType="submit">
+          保存
+        </Button>
+      </Item>
+    </Form>
+  );
+}
+```
+
+これでAnt Designのコンポーネントが出すメッセージが日本語されます:
+
+https://user-images.githubusercontent.com/855338/126418055-9849a710-704a-4c44-8170-075111fd0b17.mp4
+
+翻訳されるのはAnt Designのコンポーネントのメッセージだけのようで、アプリ固有の翻訳はAnt Design自体はサポートしていないようです。
